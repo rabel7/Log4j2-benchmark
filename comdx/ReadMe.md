@@ -34,8 +34,8 @@ TODO 待更新
 测试方式：单线程不断打印日志，执行1分30秒左右，查看差距（测试吞吐的方式）
 如图，2587次的gc和11次的gc(minor)比较，差距达到百倍
 
-![开启garbagefree-gc图](img/开启garbageFree gc图.jpg)
-![未开启garbagefree-gc图](img/未开启garbageFree gc图.jpg)
+![开启garbagefree-gc图](/img/开启garbageFree gc图.jpg)
+![未开启garbagefree-gc图](/img/未开启garbageFree gc图.jpg)
 
 ### 如何实现的
 allocate temporary objects like log event objects, Strings, char arrays, byte arrays and more during steady state logging
@@ -44,10 +44,11 @@ allocate temporary objects like log event objects, Strings, char arrays, byte ar
 于是log4j2的实现则将这些对象的属性保存到了ThreadLocal的一个map中，这样保证当方法栈执行完毕后，直接可随着栈回收
 
 ### 结论
-1、打印的日志越大吞吐量越低
-2、性能和线程的关系TODO 待测试
-3、开启garbage free 可减少大量的gc回收，建议开启
-4、性能方面log4j2 > logback > log4j1
+-   打印的日志越大吞吐量越低
+-   性能和线程的关系TODO 待测试
+-   开启garbage free 可减少大量的gc回收，建议开启
+-   性能方面log4j2 > logback > log4j1
+-   输出日志parttern不配置类方法等信息，将会大幅提高吞吐（不再需要获取栈信息可提高性能）
 
 
 ### 相关文档地址
