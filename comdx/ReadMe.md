@@ -15,7 +15,6 @@
 ### 关键字
 性能测试、disruptor、garbage free
 
-
 ### 测试相关参数
 
 运行需要加入vm参数：-DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector 
@@ -28,10 +27,10 @@
 TODO 待更新
 
 
-### garbage free
+### garbagefree
 先看看官方怎么介绍的garbage free的，开启后可减少gc回收，提高系统的吞吐
 
-### garbage free 性能测试
+### garbagefree 性能测试
 
 通过visualVM查看，安装的visual-gc插件进行查看
 测试方式：单线程不断打印日志，执行1分30秒左右，查看差距（测试吞吐的方式）
@@ -42,7 +41,7 @@ TODO 待更新
 -   2587 collections,consume 3.2s
 ![未开启garbagefree-gc图](img/notopen_garbageFree_visualVM.jpg)
 
-### 如何实现的
+### garbagefree如何实现的
     allocate temporary objects like log event objects, Strings, char arrays, byte arrays and more during steady state logging
 官方原话，在输出日志过程中需要创建大量的临时对象，如log event，String，char arrays等
 了解jvm的同学都知道，创建对象意味着在堆创建，堆内存通过gc回收；
