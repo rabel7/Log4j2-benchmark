@@ -43,8 +43,8 @@ TODO 待更新
 ![未开启garbagefree-gc图](img/notopen_garbageFree_visualVM.jpg)
 
 ### 如何实现的
-allocate temporary objects like log event objects, Strings, char arrays, byte arrays and more during steady state logging
-官方原话，在输出日志过程中需要创建大量的临时对象，比如 log event（日志事件）
+    allocate temporary objects like log event objects, Strings, char arrays, byte arrays and more during steady state logging
+官方原话，在输出日志过程中需要创建大量的临时对象，如log event，String，char arrays等
 了解jvm的同学都知道，创建对象意味着在堆创建，堆内存通过gc回收；
 于是log4j2的实现则将这些对象的属性保存到了ThreadLocal的一个map中，这样保证当方法栈执行完毕后，直接可随着栈回收
 
