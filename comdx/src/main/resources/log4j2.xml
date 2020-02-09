@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+
+    <!--<Appenders>-->
+        <!--<File name="MyFile" fileName="app.log">-->
+            <!--<PatternLayout>-->
+                <!--<Pattern>%d %p %c{1.} [%t] %m%n</Pattern>-->
+            <!--</PatternLayout>-->
+        <!--</File>-->
+        <!--<Console name="Console" target="SYSTEM_OUT">-->
+                <!--<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>-->
+        <!--</Console>-->
+
+        <!--<Async name="Async">-->
+            <!--<AppenderRef ref="MyFile"/>-->
+        <!--</Async>-->
+    <!--</Appenders>-->
+
+
+    <!--<Loggers>-->
+        <!--<Root level="INFO">-->
+            <!--<AppenderRef ref="Async"/>-->
+            <!--&lt;!&ndash;<AppenderRef ref="Console"/>&ndash;&gt;-->
+        <!--</Root>-->
+       <!---->
+    <!--</Loggers>-->
+
+
+    <Appenders>
+        <RandomAccessFile name="RandomAccessFile" fileName="async-log4j2.log" immediateFlush="false" append="false">
+            <PatternLayout>
+                <!--只输出msg-->
+                <!--<Pattern>%m%n</Pattern>-->
+
+                <!--复杂输出，带有行号等信息-->
+                <!--<Pattern>%d %-5p %L - %m%n </Pattern>-->
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+        </RandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <Root level="info" includeLocation="false">
+            <AppenderRef ref="RandomAccessFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
