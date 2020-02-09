@@ -57,7 +57,7 @@ allocate temporary objects like log event objects, Strings, char arrays, byte ar
 
 
 ### 相关文档地址
-[jmh](http://openjdk.java.net/projects/code-tools/jmh/)
-[garbagefree](http://logging.apache.org/log4j/2.x/manual/garbagefree.html)
-[log4j2 async logger](http://logging.apache.org/log4j/2.x/manual/async.html)
-[disruptor](https://github.com/LMAX-Exchange/disruptor/wiki/Introduction)
+*   [jmh](http://openjdk.java.net/projects/code-tools/jmh/)
+*   [garbagefree](http://logging.apache.org/log4j/2.x/manual/garbagefree.html)
+*   [log4j2 async logger](http://logging.apache.org/log4j/2.x/manual/async.html)
+*   [disruptor](https://github.com/LMAX-Exchange/disruptor/wiki/Introduction)
