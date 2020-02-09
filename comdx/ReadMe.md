@@ -34,8 +34,8 @@ TODO 待更新
 测试方式：单线程不断打印日志，执行1分30秒左右，查看差距（测试吞吐的方式）
 如图，2587次的gc和11次的gc(minor)比较，差距达到百倍
 
-![开启garbagefree-gc图](/img/开启garbageFree gc图.jpg)
-![未开启garbagefree-gc图](/img/未开启garbageFree gc图.jpg)
+![开启garbagefree-gc图](img/open_garbageFree_visualVM.jpg)
+![未开启garbagefree-gc图](img/open_garbageFree_visualVM.jpg)
 
 ### 如何实现的
 allocate temporary objects like log event objects, Strings, char arrays, byte arrays and more during steady state logging
