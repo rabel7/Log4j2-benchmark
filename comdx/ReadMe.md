@@ -25,6 +25,39 @@
 
 ### logback VS log4j2 性能测试结果
 TODO 待更新
+测试前均会完成5次，每次10秒的warmup
+启动jvm配置为1G内存
+
+
+#### 吞吐量测试
+
+```java
+@Param({"shortLogInfo", "LongLogInfoLongLogInfoLongLogInfoLongLogInfoLongLogInfoLongLogInfoLongLogInfo"})
+private String logOutputStr;
+public void testThroughput() {
+        LOGGER.info(logOutputStr + i++);
+}
+```
+
+
+#####log4j配置
+```xml
+<Appenders>
+    <RandomAccessFile name="RandomAccessFile" fileName="async-log4j2.log" immediateFlush="false" append="false">
+        <PatternLayout>
+            <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+        </PatternLayout>
+    </RandomAccessFile>
+</Appenders>
+<Loggers>
+    <Root level="info" includeLocation="false">
+        <AppenderRef ref="RandomAccessFile"/>
+    </Root>
+</Loggers>
+```
+
+
+每次测试日志均是清空状态
 
 
 ### garbagefree
@@ -58,7 +91,8 @@ TODO 待更新
 
 
 ### 相关文档地址
-*   [jmh](http://openjdk.java.net/projects/code-tools/jmh/)
+*   [JMH](http://openjdk.java.net/projects/code-tools/jmh/)
 *   [garbagefree](http://logging.apache.org/log4j/2.x/manual/garbagefree.html)
 *   [log4j2 async logger](http://logging.apache.org/log4j/2.x/manual/async.html)
 *   [disruptor](https://github.com/LMAX-Exchange/disruptor/wiki/Introduction)
+*   [JMH-visual-chart](https://github.com/Sayi/jmh-visual-chart) 

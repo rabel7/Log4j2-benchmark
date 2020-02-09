@@ -1,0 +1,126 @@
+[
+    {
+        "jmhVersion" : "1.23",
+        "benchmark" : "log4j2.Log4j2PerformanceTest.testThroughput",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/bin/java",
+        "jvmArgs" : [
+            "-DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector",
+            "-Dlog4j2.enable.threadlocals=true",
+            "-Dlog4j2.enable.direct.encoders=true",
+            "-Xms1G",
+            "-Xmx1G",
+            "-javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=65136:/Applications/IntelliJ IDEA.app/Contents/bin",
+            "-Dfile.encoding=UTF-8"
+        ],
+        "jdkVersion" : "1.8.0_181",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "25.181-b13",
+        "warmupIterations" : 5,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "logOutputStr" : "shortLogInfo"
+        },
+        "primaryMetric" : {
+            "score" : 1242293.565569799,
+            "scoreError" : 60238.206382924494,
+            "scoreConfidence" : [
+                1182055.3591868745,
+                1302531.7719527234
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1222553.107699471,
+                "50.0" : 1243918.830912042,
+                "90.0" : 1263202.8949435642,
+                "95.0" : 1263202.8949435642,
+                "99.0" : 1263202.8949435642,
+                "99.9" : 1263202.8949435642,
+                "99.99" : 1263202.8949435642,
+                "99.999" : 1263202.8949435642,
+                "99.9999" : 1263202.8949435642,
+                "100.0" : 1263202.8949435642
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    1263202.8949435642,
+                    1249424.8890735984,
+                    1243918.830912042,
+                    1232368.1052203202,
+                    1222553.107699471
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.23",
+        "benchmark" : "log4j2.Log4j2PerformanceTest.testThroughput",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/bin/java",
+        "jvmArgs" : [
+            "-DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector",
+            "-Dlog4j2.enable.threadlocals=true",
+            "-Dlog4j2.enable.direct.encoders=true",
+            "-Xms1G",
+            "-Xmx1G",
+            "-javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=65136:/Applications/IntelliJ IDEA.app/Contents/bin",
+            "-Dfile.encoding=UTF-8"
+        ],
+        "jdkVersion" : "1.8.0_181",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "25.181-b13",
+        "warmupIterations" : 5,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "logOutputStr" : "LongLogInfoLongLogInfoLongLogInfoLongLogInfoLongLogInfoLongLogInfoLongLogInfo"
+        },
+        "primaryMetric" : {
+            "score" : 982630.2376211897,
+            "scoreError" : 19141.997917560173,
+            "scoreConfidence" : [
+                963488.2397036295,
+                1001772.2355387498
+            ],
+            "scorePercentiles" : {
+                "0.0" : 975658.7609509248,
+                "50.0" : 984507.1298808167,
+                "90.0" : 988359.0454849286,
+                "95.0" : 988359.0454849286,
+                "99.0" : 988359.0454849286,
+                "99.9" : 988359.0454849286,
+                "99.99" : 988359.0454849286,
+                "99.999" : 988359.0454849286,
+                "99.9999" : 988359.0454849286,
+                "100.0" : 988359.0454849286
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    979695.5498002288,
+                    988359.0454849286,
+                    984930.7019890489,
+                    975658.7609509248,
+                    984507.1298808167
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    }
+]
+
+
