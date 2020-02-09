@@ -5,9 +5,12 @@
 本意是与logback的性能做下对比，于是顺带把log4j2的特性测了一遍
 本次测试基于jmh做的
 测试环境：
-JDK 1.8.0_181, 64位， mac OS 10.13
-CPU: 2.7 GHz Intel Core i5
-内存: 8G
+-   OS mac OS 10.13
+-   JDK 1.8.0_181
+-   CPU: 2.7 GHz Intel Core i5
+-   memory: 8G
+-   Log4j version:2.13.0
+-   disruptor version: 3.4.2
 
 ### 关键字
 性能测试、disruptor、garbage free
