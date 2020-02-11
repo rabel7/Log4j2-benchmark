@@ -13,7 +13,7 @@
 -   disruptor version: 3.4.2
 
 ### 关键字
-性能测试、disruptor、garbage free
+`benchmark`、`disruptor`、`garbage free`
 
 ### 测试相关参数
 
