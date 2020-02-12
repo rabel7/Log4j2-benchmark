@@ -17,7 +17,8 @@
 
 ### 测试相关参数
 
-运行需要加入vm参数：-DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector 
+运行需要加入vm参数：
+-DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector 
 -Dlog4j2.enable.threadlocals=true 
 -Dlog4j2.enable.direct.encoders=true 
 -Xms32m -Xmx32m
@@ -26,7 +27,7 @@
 ### logback VS log4j2 性能测试结果
 TODO 待更新
 测试前均会完成5次，每次10秒的warmup
-启动jvm配置为1G内存
+启动jvm配置为1G内存(-Xms1G -Xmx1G)
 
 
 #### 吞吐量测试
