@@ -344,7 +344,7 @@ CPU为了提高读取数据的速度，会将数据缓存，在这边存储的�
 一个Java的long类型是8字节，因此在一个缓存行中可以存8个long类型的变量。
 
 ``` java
-//看看disuptor的底层累
+//看看disuptor的类实现
 abstract class RingBufferPad
 {
     protected long p1, p2, p3, p4, p5, p6, p7;
