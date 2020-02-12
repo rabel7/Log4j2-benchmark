@@ -351,6 +351,8 @@ abstract class RingBufferPad
 }
 ```
 
+#### 内存屏障&缓存一致性协议
+
 
 #### 参考资料
 http://logback.qos.ch/manual/architecture.html
