@@ -100,15 +100,14 @@ ThresholdFilter
 
 
 
-DuplicateMessageFilter   用于检测重复的消息 维护了一个100长度的lru缓存，缓存打印的日志及次数，超过5次则丢弃
-DynamicThresholdFilter  
-LRUMessageCache
-MarkerFilter 用于验证日志请求中包含指定标识
-MatchingFilter
-MDCFilter
-MDCValueLevelPair
-ReconfigureOnChangeFilter 配置修改重配置过滤器
-TurboFilter  所有过滤器的基类
+-   DuplicateMessageFilter   用于检测重复的消息 维护了一个100长度的lru缓存，缓存打印的日志及次数，超过5次则丢弃
+-   DynamicThresholdFilter  
+-   MarkerFilter 用于验证日志请求中包含指定标识
+-   MatchingFilter
+-   MDCFilter
+-   MDCValueLevelPair
+-   ReconfigureOnChangeFilter 配置修改重配置过滤器
+-   TurboFilter  所有过滤器的基类
 ##### appender
 
 
@@ -119,11 +118,11 @@ appender负责代理日志事件任务
 
 类图
 ![Aaron Swartz](img/AsyncAppender.png)
-DBAppender 将日志信息输出到三张表
-ConsoleAppender 输出到控制台
-FileAppender  输出到文件
-AsyncAppender  异步日志
-RollingFileAppender 常见的日志自动切分
+-   DBAppender 将日志信息输出到DB
+-   ConsoleAppender 输出到控制台
+-   FileAppender  输出到文件
+-   AsyncAppender  异步日志
+-   RollingFileAppender 日志自动切分
 
 
 ##### layout
