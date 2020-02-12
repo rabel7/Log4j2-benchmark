@@ -267,8 +267,18 @@ public final class StackTraceElement implements java.io.Serializable {
 }  
          
 ```    
+
 设置neverBlock为false，当队列满时出现阻塞
-风险：会有丢日志的风险，但Async可配置丢弃日志级别
+``` java
+private void put(E eventObject) {
+        if (neverBlock) {
+            //风险：会有丢日志的风险，但能提高点性能
+            blockingQueue.offer(eventObject);
+        } else {
+            putUninterruptibly(eventObject);
+        }
+    }
+```
 
 #### 其他特性（配置文件自动更新）
 logback配置文件是可以动态更新的
@@ -319,17 +329,28 @@ TODO 列一个表格，表示Ringbuffer和ArrayBlockingQueue的优缺点
 #### 聊聊CPU
 离cpu越远，容量越大，速度也越慢，价格也更便宜
 寄存器->L0->L1->L2->L3->ROM(内存)->RAM(磁盘)
+当CPU执行运算的时候，它先去L1查找所需的数据，再去L2，然后是L3，最后如果这些缓存中都没有，所需的数据就要去主内存拿。走得越远，运算耗费的时间就越长。所以如果你在做一些很频繁的事，你要确保数据在L1缓存中。
 
 -   每核心都有一个自己的L1缓存。L1缓存分两种：L1指令缓存(L1-icache)和L1数据缓存(L1-dcache)。L1指令缓存用来存放已解码指令，L1数据缓存用来放访问非常频繁的数据。
 -   L2缓存用来存放近期使用过的内存数据。更严格地说，存放的是很可能将来会被CPU使用的数据。
 -   多数多核CPU的各核都各自拥有一个L2缓存，但也有多核共享L2缓存的设计。无论如何，L1是各核私有的(但对某核内的多线程是共享的)。
 
+![cpu](img/1581515530752.jpg)
+
+
 #### 缓存行填充
 CPU为了提高读取数据的速度，会将数据缓存，在这边存储的单位为缓存行，
-一个缓存行为64个字节。
+一个缓存行为64个字节(并不是所有，但大多数的CPU是)
+一个Java的long类型是8字节，因此在一个缓存行中可以存8个long类型的变量。
 
-#### 内存屏障
-CPU的一个指令，用于保证
+``` java
+//看看disuptor的底层累
+abstract class RingBufferPad
+{
+    protected long p1, p2, p3, p4, p5, p6, p7;
+}
+```
+
 
 #### 参考资料
 http://logback.qos.ch/manual/architecture.html
