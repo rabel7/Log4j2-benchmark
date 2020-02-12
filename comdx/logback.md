@@ -59,8 +59,7 @@ sl4j与其他日志组件的关系就好像jdbc和各个驱动厂商的关系，
 
 #### Logback的执行过程
 `filter`->`appender`->`encoder`->`layout`
-![Aaron Swartz](http://logback.qos.ch/manual/images/chapters/architecture/underTheHoodSequence2.gif)
-
+![Aaron Swartz](img/1581467168394.jpg)
 
 让我们先来看看Logback中的Logger.info中最终调用的方法
 ``` java
