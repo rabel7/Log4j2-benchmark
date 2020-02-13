@@ -148,6 +148,7 @@ public class AsyncAppenderBase<E> extends UnsynchronizedAppenderBase<E> implemen
     @Override
     public void start() {
         // ....省略掉部分代码
+        // 1.定义了一个缓冲区
         blockingQueue = new ArrayBlockingQueue<E>(queueSize);
 
         if (discardingThreshold == UNDEFINED)
@@ -171,7 +172,7 @@ public class AsyncAppenderBase<E> extends UnsynchronizedAppenderBase<E> implemen
         put(eventObject);
     }
     
-    //将日志放入队列
+    //2. 将日志放入队列
     private void put(E eventObject) {
         if (neverBlock) {
             blockingQueue.offer(eventObject);
@@ -180,6 +181,7 @@ public class AsyncAppenderBase<E> extends UnsynchronizedAppenderBase<E> implemen
         }
     }
     
+    //3. 定义了一个线程用于做消费者，消费队列中的日志
     class Worker extends Thread {
     
         public void run() {
@@ -189,7 +191,7 @@ public class AsyncAppenderBase<E> extends UnsynchronizedAppenderBase<E> implemen
             // loop while the parent is started
             while (parent.isStarted()) {
                 try {
-                    //不断的循环从队列中拿出进行处理
+                    //4. 不断的循环从队列中拿出进行处理
                     E e = parent.blockingQueue.take();
                     aai.appendLoopOnAppenders(e);
                 } catch (InterruptedException ie) {
