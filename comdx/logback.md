@@ -389,11 +389,10 @@ volatile的定义
 -   这个写回内存的操作会引起在其他CPU里缓存了该内存地址的数据无效。
 
 #### 参考资料
-http://logback.qos.ch/manual/architecture.html
-http://logging.apache.org/log4j/2.x/manual/async.html
-http://www.slf4j.org/codes.html#StaticLoggerBinder
-https://github.com/LMAX-Exchange/disruptor
-http://ifeve.com/disruptor-cacheline-padding/
-http://ifeve.com/volatile/
-http://ifeve.com/disruptor-memory-barrier/
-http://ifeve.com/locks-are-bad/
+*   [logback](http://logback.qos.ch/manual/architecture.html)
+*   [log4j-sync](http://logging.apache.org/log4j/2.x/manual/async.html)
+*   [disruptor](https://github.com/LMAX-Exchange/disruptor/wiki/Introduction)
+*   [disruptor-cacheline-padding](http://ifeve.com/disruptor-cacheline-padding/) 
+*   [volatile](http://ifeve.com/volatile/) 
+*   [disruptor-memory-barrier](http://ifeve.com/disruptor-memory-barrier/) 
+*   [locks-are-bad](http://ifeve.com/locks-are-bad/) 
