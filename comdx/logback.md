@@ -275,8 +275,7 @@ private void put(E eventObject) {
 ```
 
 #### 其他特性（配置文件自动更新）
-logback配置文件是可以动态更新的
-使用场景：动态调整日志级别，便于追踪服务
+使用场景：动态调整日志级别，可以在运行期替换掉相应的日志文件，如果开启则会定时进行扫描
 -   配置方式
 ``` xml
 <configuration scan="true" scanPeriod="60000">
