@@ -84,7 +84,6 @@ private void filterAndLog_0_Or3Plus(final String localFQCN, final Marker marker,
 
 #### 组件（appender，filter，layout）及介绍作用
 
-TODO 需要一个大类图，展示他们的依赖关系
 Logger依赖了filter及appender； appender依赖于layout
 
 ##### filter
@@ -101,21 +100,14 @@ ThresholdFilter
 
 
 -   DuplicateMessageFilter   用于检测重复的消息 维护了一个100长度的lru缓存，缓存打印的日志及次数，超过5次则丢弃
--   DynamicThresholdFilter  
+-   DynamicThresholdFilter   动态控制日志的级别
 -   MarkerFilter 用于验证日志请求中包含指定标识
--   MatchingFilter
--   MDCFilter
--   MDCValueLevelPair
 -   ReconfigureOnChangeFilter 配置修改重配置过滤器
 -   TurboFilter  所有过滤器的基类
+
+
 ##### appender
-
-
-
-
-Logback delegates the task of writing a logging event to components called appenders
-appender负责代理日志事件任务
-
+appender用于日志的输出组件
 类图
 ![Aaron Swartz](img/AsyncAppender.png)
 -   DBAppender 将日志信息输出到DB
@@ -313,11 +305,12 @@ public class ReconfigureOnChangeTask implements Runnable {
 ```  
 
 #### 性能分析比较
-TODO 需要测试下
+TODO 待列出数据
 #### appender源码分析比较（log4j=asyncAppender，logback=asyncAppender，log4j2=Disruptor）
 #### 为什么disruptor更快
 锁模型，传统的加锁 VS 乐观锁CAS
 底层存储区别 RingBuffer VS ArrayBlockingQueue，两者都是固定长度，两者都是基于数组，但加锁的方式不同
+
 
 
 //关联讲讲wangshu的代码实现
@@ -326,9 +319,21 @@ TODO 需要测试下
 
 TODO 列一个表格，表示Ringbuffer和ArrayBlockingQueue的优缺点
 
+
+
 #### 聊聊CPU
 离cpu越远，容量越大，速度也越慢，价格也更便宜
 寄存器->L0->L1->L2->L3->ROM(内存)->RAM(磁盘)
+
+| 从CPU到        | 大约需要的 CPU 周期    |大约需要的 CPU 周期    | 
+| ----:   | ----------:   |  ----------:   | 
+| 寄存器        | 1 cycle	  |  |
+| L1        | 约3-4 cycles	  | 约1ns |
+| L2        | 约10 cycles	  | 约3ns |
+| L3        | 约40-50 cycles	  | 约15ns  |
+| 内存        |   | 60-80ns |
+
+
 当CPU执行运算的时候，它先去L1查找所需的数据，再去L2，然后是L3，最后如果这些缓存中都没有，所需的数据就要去主内存拿。走得越远，运算耗费的时间就越长。所以如果你在做一些很频繁的事，你要确保数据在L1缓存中。
 
 -   每核心都有一个自己的L1缓存。L1缓存分两种：L1指令缓存(L1-icache)和L1数据缓存(L1-dcache)。L1指令缓存用来存放已解码指令，L1数据缓存用来放访问非常频繁的数据。
@@ -351,8 +356,37 @@ abstract class RingBufferPad
 }
 ```
 
-#### 内存屏障&缓存一致性协议
+#### 遍历数组和链表，谁更快
+从时间复杂度触发，两者都是O(n)的复杂度；
+但经过实际测试，遍历速度的速度快过链表
 
+原因就在于 数组在底层存储是一块连续的内存空间，
+而链表由于实现原因，显然不是；
+
+cpu在读取内存的数据到缓存时并不是一次次的读取，显然为了提高速度
+会将`一片连续的区域`一次读取
+
+
+
+#### 内存屏障&缓存一致性协议
+volatile的定义
+我们都知道volatile修饰的变量
+1   在每次修改后会保证其他线程读到的是当前的最新的值
+2   禁止编译器进行指令重排序
+
+当然volatile的修饰，锁和sychronize也可以达到一样的效果；
+那么volatile修饰的变量在编译后是怎样的呢
+
+|         |     | 
+| ----:   | ----------:   | 
+| Java代码        | instance = new Singleton();//instance是volatile变量     |
+| 汇编代码        | 0x01a3de1d: movb $0x0,0x1104800(%esi);0x01a3de24: **lock** addl $0x0,(%esp);      |
+
+
+有volatile变量修饰的共享变量进行写操作的时候会多第二行汇编代码，通过查IA-32架构软件开发者手册可知，lock前缀的指令在多核处理器下会引发了两件事情。
+
+-   将当前处理器缓存行的数据会写回到系统内存
+-   这个写回内存的操作会引起在其他CPU里缓存了该内存地址的数据无效。
 
 #### 参考资料
 http://logback.qos.ch/manual/architecture.html
