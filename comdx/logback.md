@@ -277,8 +277,12 @@ private void put(E eventObject) {
 #### 其他特性（配置文件自动更新）
 logback配置文件是可以动态更新的
 使用场景：动态调整日志级别，便于追踪服务
-1、配置方式
-2、如何实现
+-   配置方式
+``` xml
+<configuration scan="true" scanPeriod="60000">
+</configuration>
+```
+-   如何实现
 ReconfigureOnChangeTask
 简单说就是启一个定时器线程，根据配置间隔时间进行检测，检测配置文件的修改时间
 
