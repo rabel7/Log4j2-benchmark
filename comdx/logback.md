@@ -210,7 +210,7 @@ public class AsyncAppenderBase<E> extends UnsynchronizedAppenderBase<E> implemen
 }
 ``` 
 
-问题2：既然实现是ArrayBlockingQueue，如果队列满了如何处理（是否会丢日志）
+问题2：既然实现是ArrayBlockingQueue，它是一个定长队列，如果队列满了如何处理
 ``` java
 //默认的策略是队列中容量还剩20%则会进行丢弃
 if (discardingThreshold == UNDEFINED)
