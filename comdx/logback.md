@@ -359,7 +359,7 @@ public class ReconfigureOnChangeTask implements Runnable {
 作为日志组件来说，相对于业务，日志应该是可以可降级的功能
 
 另外一个原因，ConcurrentLinkedQueue作为jdk实现的并发的无界队列，每次放入元素，
-都需要new一个Node，显然当出队时jvm需要回收相关对象（具体可参考之前wangshu的垃圾回收次数）
+都需要new一个Node，当生产很快则会频繁的触发jvm继续gc
 
 #### 为什么Lo4j2性能更好
 -   缓冲区实现更优(ArrayBlocking(有锁定长队列) vs Disruptor(无锁定长环))
