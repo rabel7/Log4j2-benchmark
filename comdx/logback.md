@@ -88,7 +88,6 @@ private void filterAndLog_0_Or3Plus(final String localFQCN, final Marker marker,
 Logger依赖了filter及appender； appender依赖于layout
 
 ##### filter
-TODO 默认开启哪些过滤器
 主要做过滤器，官方提供了如下几个过滤器
 
 ![Aaron Swartz](img/MatchingFilter.png)
