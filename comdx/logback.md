@@ -4,12 +4,16 @@
 排查线上问题的过程中，现象是cpu居高不下，触发频繁的gc，在打印繁忙线程的执行栈时，有好几个线程都在执行日志输出
 起初怀疑是配置的同步日志导致，后面确定配置的异步日志；在排查过程中也阅读了日志的相关源码，对它产生了好奇，于是
 系统的阅读了logback的源码
-#### 日志的前世今生（sl4j和其他的关系）
-sl4j与其他日志组件的关系就好像jdbc和各个驱动厂商的关系，即sl4j定义了一套标准
+
+java的日志之间的关系是怎样的
+日志的输出是同步还是异步的，是如何实现异步的
+影响日志性能的因素有哪些
+
+#### 日志的前世今生（sl4j、log4j,logback的关系）
+sl4j与其他日志组件的关系就好像jdbc和各个驱动厂商的关系，sl4j定义了一套接口由不同的日志厂商实现
 
 #### sl4j如何定义标准的
-从平时的代码说起 
-    LoggerFactory.getLogger,让我们来看看getLogger做了什么
+从平时的代码说起``LoggerFactory.getLogger``,让我们来看看getLogger做了什么
 注：其中Logger和LoggerFactory都是slf4定义的接口和工厂
 
 
@@ -31,15 +35,12 @@ sl4j与其他日志组件的关系就好像jdbc和各个驱动厂商的关系，
         }
         switch (INITIALIZATION_STATE) {
         case SUCCESSFUL_INITIALIZATION:
+            //获取日志工厂
             return StaticLoggerBinder.getSingleton().getLoggerFactory();
         case NOP_FALLBACK_INITIALIZATION:
             return NOP_FALLBACK_FACTORY;
-        case FAILED_INITIALIZATION:
-            throw new IllegalStateException(UNSUCCESSFUL_INIT_MSG);
-        case ONGOING_INITIALIZATION:
-            return SUBST_FACTORY;
+        ...省略部分代码
         }
-        throw new IllegalStateException("Unreachable code");
     }
     }
 ```
@@ -50,7 +51,7 @@ sl4j与其他日志组件的关系就好像jdbc和各个驱动厂商的关系，
 那么问题来了，sl4j是如何找到的最终日志实现类呢，可以看到下图，没引入任何日志包时是这样的，
 ![Aaron Swartz](img/1581379589119.jpg)
 
-接着我们看下日志实现厂商logback的org.sl4j.impl下有一个这样的实现类
+接着我们看下日志实现厂商logback的org.sl4j.impl下有一个这样的实现类，通过加载到实现类最终完成
 ![Aaron Swartz](img/9841581122009_.pic.jpg)
 
 
@@ -58,7 +59,7 @@ sl4j与其他日志组件的关系就好像jdbc和各个驱动厂商的关系，
 
 
 #### Logback的执行过程
-`filter`->`appender`->`encoder`->`layout`
+`filter(过滤)`->`appender(输出)`->`encoder(转换)`->`layout(格式)`
 ![Aaron Swartz](img/1581467168394.jpg)
 
 让我们先来看看Logback中的Logger.info中最终调用的方法
@@ -90,14 +91,7 @@ Logger依赖了filter及appender； appender依赖于layout
 TODO 默认开启哪些过滤器
 主要做过滤器，官方提供了如下几个过滤器
 
-过滤器分为两类，filter和turborFilter
-
-filter
-LevelFilter  
-ThresholdFilter
 ![Aaron Swartz](img/MatchingFilter.png)
-
-
 
 -   DuplicateMessageFilter   用于检测重复的消息 维护了一个100长度的lru缓存，缓存打印的日志及次数，超过5次则丢弃
 -   DynamicThresholdFilter   动态控制日志的级别
@@ -108,7 +102,6 @@ ThresholdFilter
 
 ##### appender
 appender用于日志的输出组件
-类图
 ![Aaron Swartz](img/AsyncAppender.png)
 -   DBAppender 将日志信息输出到DB
 -   ConsoleAppender 输出到控制台
@@ -124,18 +117,19 @@ layout 负责将event转换程最终要输出的日志格式
 比如：DateConverter、ThreadConverter、MessageConverter等
 
 
-##### asyncAppender 源码刨析
-典型的生产者消费者模型，appender负责将事件发送到缓冲（队列，在Loback中采用ArrayBlockingQueue）
-由一个线程（消费者）从缓冲中拿出并做后续的处理
+##### logback是如何实现异步输出日志的 
+logback的实现采用了生产者消费者模型，appender负责将事件发送到缓冲（队列，在Loback中采用ArrayBlockingQueue）
+由一个线程（消费者）从缓冲中取出将最终将日志写入文件中
 
-让我们先看下async appender的一个配置
+让我们先看下async appender的一个配置，配置了缓冲区的队列大小512
 ``` xml
  <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
 
         <discardingThreshold>0</discardingThreshold>
         <includeCallerData>false</includeCallerData>
         <queueSize>512</queueSize>
-
+        //配置异步输入日志的实现
+        <appender-ref ref="APP_INFO" />
 </appender>
 ``` 
 
@@ -210,7 +204,10 @@ public class AsyncAppenderBase<E> extends UnsynchronizedAppenderBase<E> implemen
 }
 ``` 
 
-问题2：既然实现是ArrayBlockingQueue，它是一个定长队列，如果队列满了如何处理
+##### 如果队列满了怎么办
+
+看如下源码，默认配置为如果队列中容量只剩20%则会丢弃；
+也可以配置为永不丢弃日志或根据日志级别丢弃日志（降级）
 ``` java
 //默认的策略是队列中容量还剩20%则会进行丢弃
 if (discardingThreshold == UNDEFINED)
@@ -235,6 +232,41 @@ protected void append(E eventObject) {
     put(eventObject);
 }
 ```
+
+
+##### logback是每次都一行行写入文件吗
+从如下源码可以看出，logback的默认缓冲区大小为8kb，根据日志的配置immediateFlush(默认为true)决定将
+日志刷到文件上的频率，显然调整immediateFlush可以降低服务器上磁盘io，并提高日志的吞吐
+
+``` java
+  //默认的缓存区大小为8kb
+ public static final long DEFAULT_BUFFER_SIZE = 8192;
+
+ 
+ public ResilientFileOutputStream(File file, boolean append, long bufferSize) throws FileNotFoundException {
+         this.file = file;
+         fos = new FileOutputStream(file, append);
+          //可以看到最终依赖的是BufferedOutputStream的方式写入
+         this.os = new BufferedOutputStream(fos, (int) bufferSize);
+         this.presumedClean = true;
+     }
+
+ private void writeBytes(byte[] byteArray) throws IOException {
+        if(byteArray == null || byteArray.length == 0)
+            return;
+        
+        lock.lock();
+        try {
+            this.outputStream.write(byteArray);
+            //如果immediateFlush为true则不等缓存区满也刷到磁盘上
+            if (immediateFlush) {
+                this.outputStream.flush();
+            }
+        } finally {
+            lock.unlock();
+        }
+```
+
 
 从阅读源码的过程中，还看到了一个配置项`includeCallerData`,那么这个参数是干什么的呢？
 见源码分析可以看出，如果在日志中需要打印日志的行号、方法名等需要将这个属性开启，默认是关闭的状态
@@ -262,7 +294,8 @@ public final class StackTraceElement implements java.io.Serializable {
          
 ```    
 
-设置neverBlock为false，当队列满时出现阻塞
+#### 其他优化方式
+可设置neverBlock为false，则调用队列的offer，但会有丢日志的风险
 ``` java
 private void put(E eventObject) {
         if (neverBlock) {
@@ -309,21 +342,36 @@ public class ReconfigureOnChangeTask implements Runnable {
 }
 ```  
 
-#### 性能分析比较
-TODO 待列出数据
-#### appender源码分析比较（log4j=asyncAppender，logback=asyncAppender，log4j2=Disruptor）
-#### 为什么disruptor更快
-锁模型，传统的加锁 VS 乐观锁CAS
-底层存储区别 RingBuffer VS ArrayBlockingQueue，两者都是固定长度，两者都是基于数组，但加锁的方式不同
+#### logback VS log4j2
+首先log4j和loback的实现思路基本一致（同一个作者），但在缓冲区以及部分实现上有差异
+先给出结论，性能上log4j2的性能超过logback；
+
+| 日志实现       | 队列实现   |
+| ----:   | ----------:    | 
+|  logback       | ArrayBlockingQueue  | 
+|  log4j2       | RingBuffer	  |
 
 
+#### 为什么日志组件都选择了有界队列
+当出现生产消费(可能磁盘损坏等)速度跟不上的时候，通过有界队列的限流达到不影响业务；
+作为日志组件来说，相对于业务，日志应该是可以可降级的功能
 
-//关联讲讲wangshu的代码实现
-谈谈linkedBlockingQueue的缺点，即会发生大量待回收节点，需要频繁的gc
+另外一个原因，ConcurrentLinkedQueue作为jdk实现的并发的无界队列，每次放入元素，
+都需要new一个Node，显然当出队时jvm需要回收相关对象（具体可参考之前wangshu的垃圾回收次数）
+
+#### 为什么Lo4j2性能更好
+-   缓冲区实现更优(ArrayBlocking(有锁定长队列) vs Disruptor(无锁定长环))
+-   写入文件实现(FileOutputStream vs RandomAccessFile) 官方说性能提升20%-200% 
+-   可开启garbage free模式，减少因大量的日志输出导致频繁的gc（根据个人测试结果是3000次gc降低至10次）
 
 
-TODO 列一个表格，表示Ringbuffer和ArrayBlockingQueue的优缺点
+#### 从日志组件的角度看系统设计
+个人思考，可以从日志组件看系统设计，这些点也是平常系统设计中会关注的点；
+比如接口的限流；服务的降级策略；同步异步的性能优化等
 
+-   限流（利用定长队列做到）
+-   降级（当队列超过阈值时根据指定策略，可按照级别丢弃）
+-   性能优化（同步变异步，利用缓冲区写入日志减少磁盘io）
 
 
 #### 聊聊CPU
@@ -354,23 +402,22 @@ CPU为了提高读取数据的速度，会将数据缓存，在这边存储的�
 一个Java的long类型是8字节，因此在一个缓存行中可以存8个long类型的变量。
 
 ``` java
-//看看disuptor的类实现
+//看看Ringbuffer的类实现，这是jdk7的优化方式
 abstract class RingBufferPad
 {
     protected long p1, p2, p3, p4, p5, p6, p7;
 }
+
+//jdk8提供了一个注解@Contended，可在类或者属性上进行注释，将会在头尾填充128个字节
+
 ```
 
-#### 遍历数组和链表，谁更快
-从时间复杂度触发，两者都是O(n)的复杂度；
-但经过实际测试，遍历速度的速度快过链表
+#### 为什么要缓存行填充？
 
-原因就在于 数组在底层存储是一块连续的内存空间，
-而链表由于实现原因，显然不是；
-
-cpu在读取内存的数据到缓存时并不是一次次的读取，显然为了提高速度
-会将`一片连续的区域`一次读取
-
+如下图所示，L1和L2都是每个核心独立的，但由于x和y在同一个缓存行上，
+当core1修改了x，导致整个缓存行失效，则core2读取y需要到内存中重新读取新的值
+这就是一个典型的伪共享
+![Aaron Swartz](img/share_line_pad.png)
 
 
 #### 内存屏障&缓存一致性协议
