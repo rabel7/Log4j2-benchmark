@@ -112,8 +112,11 @@ appender用于日志的输出组件
 ##### layout
 
 layout 负责将event转换程最终要输出的日志格式
-通过一个convert处理链，循环的执行替换其中关心的替换符
-比如：DateConverter、ThreadConverter、MessageConverter等
+通过一个convert处理链，循环的执行替换其中关心的替换符，最终输出日志
+-   DateConverter 日志中输出的时间由它负责
+-   ThreadConverter 日志中输出的线程名等由它负责
+-   MessageConverter 日志中的{}替换符由它负责转换
+-   MethodOfCallerConverter 日志中的方法名由它负责
 
 
 ##### logback是如何实现异步输出日志的 
