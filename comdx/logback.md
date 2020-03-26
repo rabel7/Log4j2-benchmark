@@ -348,8 +348,8 @@ public class ReconfigureOnChangeTask implements Runnable {
 首先log4j和loback的实现思路基本一致（同一个作者），但在缓冲区以及部分实现上有差异
 先给出结论，性能上log4j2的性能超过logback；
 
-| 日志实现       | 队列实现   | 实现区别|
-| ----:   | ----------:    | ----------:    | 
+| 日志实现       | 队列实现   | 实现区别  |
+| ----:   | ----------:  | ----------:    | 
 |  logback       | ArrayBlockingQueue  | 线程安全，内部定长数组，入列和出列用同一把锁  | 
 |  log4j2       | RingBuffer	  | 线程安全，定长环形队列，出列和入列分离  | 
 
@@ -359,7 +359,7 @@ public class ReconfigureOnChangeTask implements Runnable {
 作为日志组件来说，相对于业务，日志应该是可以可降级的功能
 
 另外一个原因，ConcurrentLinkedQueue作为jdk实现的并发的无界队列，每次放入元素，
-都需要new一个Node，当生产很快则会频繁的触发jvm继续gc
+都需要new一个Node，当生产很快则会频繁的触发jvm继续gc；而无论是ArrayBlocking或是RingBuffer都是一旦创建就无需再创建节点
 
 #### 为什么Lo4j2性能更好
 -   缓冲区实现更优(ArrayBlocking(有锁定长队列) vs Disruptor(无锁定长环))
@@ -368,7 +368,7 @@ public class ReconfigureOnChangeTask implements Runnable {
 
 
 #### 从日志组件的角度看系统设计
-个人思考，可以从日志组件看系统设计，这些点也是平常系统设计中会关注的点；
+可以从日志组件的设计看出这些点也是平常系统设计中会关注的点；
 比如接口的限流；服务的降级策略；同步异步的性能优化等
 
 -   限流（利用定长队列做到）
