@@ -267,6 +267,26 @@ protected void append(E eventObject) {
         } finally {
             lock.unlock();
         }
+        
+        
+public class BufferedOutputStream extends FilterOutputStream {
+     /** Flush the internal buffer */
+    private void flushBuffer() throws IOException {
+        if (count > 0) {
+            out.write(buf, 0, count);
+            count = 0;
+        }
+    }
+
+    //写字节
+    public synchronized void write(int b) throws IOException {
+       //超过缓冲区大小则刷新到文件中
+        if (count >= buf.length) {
+            flushBuffer();
+        }
+        buf[count++] = (byte)b;
+    }
+}
 ```
 
 
