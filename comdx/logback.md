@@ -348,10 +348,10 @@ public class ReconfigureOnChangeTask implements Runnable {
 首先log4j和loback的实现思路基本一致（同一个作者），但在缓冲区以及部分实现上有差异
 先给出结论，性能上log4j2的性能超过logback；
 
-| 日志实现       | 队列实现   |
-| ----:   | ----------:    | 
-|  logback       | ArrayBlockingQueue  | 
-|  log4j2       | RingBuffer	  |
+| 日志实现       | 队列实现   | 实现区别|
+| ----:   | ----------:    | ----------:    | 
+|  logback       | ArrayBlockingQueue  | 线程安全，内部定长数组，入列和出列用同一把锁  | 
+|  log4j2       | RingBuffer	  | 线程安全，定长环形队列，出列和入列分离  | 
 
 
 #### 为什么日志组件都选择了有界队列
