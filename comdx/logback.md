@@ -385,6 +385,7 @@ public class ReconfigureOnChangeTask implements Runnable {
 -   缓冲区实现更优(ArrayBlocking(有锁定长队列) vs Disruptor(无锁定长环))
 -   写入文件实现(FileOutputStream vs RandomAccessFile) 官方说性能提升20%-200% 
 -   可开启garbage free模式，减少因大量的日志输出导致频繁的gc（根据个人测试结果是3000次gc降低至10次）
+  Garbage-free logging in Log4j 2.6 is partially implemented by **reusing objects** in ThreadLocal fields, and partially by **reusing buffers** when converting text to bytes.
 
 
 #### 从日志组件的角度看系统设计
